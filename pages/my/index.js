@@ -16,27 +16,20 @@ Page({
     rechargeOpen: false // 是否开启充值[预存]功能
   },
 	onLoad() {
-    let rechargeOpen = wx.getStorageSync('RECHARGE_OPEN')
-    if (rechargeOpen && rechargeOpen == "1") {
-      rechargeOpen = true
-    } else {
-      rechargeOpen = false
-    }
-    this.setData({
-      rechargeOpen: rechargeOpen
-    })
 	},	
   onShow() {
     const _this = this
+    const order_hx_uids = wx.getStorageSync('order_hx_uids')
     this.setData({
       version: CONFIG.version,
-      vipLevel: app.globalData.vipLevel
+      vipLevel: app.globalData.vipLevel,
+      order_hx_uids
     })
     AUTH.checkHasLogined().then(isLogined => {
       this.setData({
         wxlogin: isLogined
       })
-      if (isLogined) {
+      if (isLogined) {        
         _this.getUserApiInfo();
         _this.getUserAmount();
       }
@@ -98,6 +91,9 @@ Page({
         if (res.data.base.mobile) {
           _data.userMobile = res.data.base.mobile
         }
+        if (that.data.order_hx_uids && that.data.order_hx_uids.indexOf(res.data.base.id) != -1) {
+          _data.canHX = true // 具有扫码核销的权限
+        }
         that.setData(_data);
       }
     })
@@ -149,5 +145,22 @@ Page({
       return;
     }
     AUTH.register(this);
+  },
+  scanOrderCode(){
+    wx.scanCode({
+      onlyFromCamera: true,
+      success(res) {
+        wx.navigateTo({
+          url: '/pages/order-details/scan-result?hxNumber=' + res.result,
+        })
+      },
+      fail(err) {
+        console.error(err)
+        wx.showToast({
+          title: err.errMsg,
+          icon: 'none'
+        })
+      }
+    })
   },
 })

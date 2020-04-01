@@ -41,15 +41,6 @@ Page({
         });
       }
     });
-    let rechargeOpen = wx.getStorageSync('RECHARGE_OPEN')
-    if (rechargeOpen && rechargeOpen == "1") {
-      rechargeOpen = true
-    } else {
-      rechargeOpen = false
-    }
-    this.setData({
-      rechargeOpen: rechargeOpen
-    })
   },
 
   /**
@@ -119,14 +110,14 @@ Page({
   },
   cashLogs() {
     const _this = this
-    WXAPI.cashLogs({
+    WXAPI.cashLogsV2({
       token: wx.getStorageSync('token'),
       page:1,
       pageSize:50
     }).then(res => {
       if (res.code == 0) {
         _this.setData({
-          cashlogs: res.data
+          cashlogs: res.data.result
         })
       }
     })

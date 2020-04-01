@@ -250,6 +250,11 @@ module.exports = {
       token: token
     });
   },
+  checkReferrer: function checkReferrer(referrer) {
+    return request('/user/check-referrer', true, 'get', {
+      referrer: referrer
+    });
+  },
   addTempleMsgFormid: function addTempleMsgFormid(token, type, formId) {
     return request('/template-msg/wxa/formId', true, 'post', {
       token: token, type: type, formId: formId
@@ -280,6 +285,13 @@ module.exports = {
     return request('/user/wxapp/login', true, 'post', {
       code: code,
       type: 2
+    });
+  },
+  loginWxaMobile: function loginWxaMobile(code, encryptedData, iv) {
+    return request('/user/wxapp/login/mobile', true, 'post', {
+      code: code,
+      encryptedData: encryptedData,
+      iv: iv
     });
   },
   login_username: function login_username(data) {
@@ -537,9 +549,12 @@ module.exports = {
     return request('/order/list', true, 'post', data);
   },
   orderDetail: function orderDetail(token, id) {
+    var hxNumber = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
     return request('/order/detail', true, 'get', {
       id: id,
-      token: token
+      token: token,
+      hxNumber: hxNumber
     });
   },
   orderDelivery: function orderDelivery(token, orderId) {
@@ -610,6 +625,9 @@ module.exports = {
   },
   cashLogs: function cashLogs(data) {
     return request('/user/cashLog', true, 'post', data);
+  },
+  cashLogsV2: function cashLogsV2(data) {
+    return request('/user/cashLog/v2', true, 'post', data);
   },
   payLogs: function payLogs(data) {
     return request('/user/payLogs', true, 'post', data);
